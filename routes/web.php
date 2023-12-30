@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
+
 Route::get('/payment-form',[\App\Http\Controllers\HomeController::class , 'index']);
 Route::post('/payment',[\App\Http\Controllers\PaymentController::class , 'redirecttogateway'])->name('payment-form');
 Route::get('/payment/callback',[\App\Http\Controllers\PaymentController::class , 'handlePaymentCallback']);/*this is the

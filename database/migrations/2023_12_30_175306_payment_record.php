@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('amountPaid');
             $table->string('item');
-            $table->string('amountPaid');
+            $table->string('timeOfPayyment');
         });
     }
 

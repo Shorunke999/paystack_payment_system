@@ -23,20 +23,19 @@ class PaymentController extends Controller
         }
 
     }
-    public function handlePaymentCallback(){
+    public function handlePaymentCallback(Request $request){
         $paymentStatus = Paystack::getPaymentData();
-        dd($paymentStatus);
+        //dd($paymentStatus);
         //now we have the payment details in form of{status: , message: }
         //store th authorizatio code in db to allow for recurrent subscription
         //you can the redirect and do whatever you want
-
         if ($paymentStatus['status']){
-            $saveToDB = \App\Models\PaymentRecord::create(['email'=> $paymentStatus['customer']['email'],
-             'amountPaid'=> $paymentStatus["amount"],
-             'item'=> $paymentStatus["metadata"]["item_name"],
-             'timeOfPayyment'=>$paymentStatus["paidAt"]]);
+            $saveToDB = \App\Models\PaymentRecord::create(['email'=> $paymentStatus['data']['customer']['email'],
+             'amountPaid'=> $paymentStatus['data']["amount"],
+             'item'=> $paymentStatus['data']["metadata"]["item_name"],
+             'timeOfPayyment'=>$paymentStatus['data']["paidAt"]]);
              //broadcast(new event())->toOthers();
-            return view('');
+            return Redirect::route('welcome');
 
         }
 
