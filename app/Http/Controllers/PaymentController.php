@@ -30,12 +30,17 @@ class PaymentController extends Controller
         //store th authorizatio code in db to allow for recurrent subscription
         //you can the redirect and do whatever you want
         if ($paymentStatus['status']){
-            $saveToDB = \App\Models\PaymentRecord::create(['email'=> $paymentStatus['data']['customer']['email'],
+            $saveToDB = \App\Models\PaymentRecord::create([
+            'email'=> $paymentStatus['data']['customer']['email'],
              'amountPaid'=> $paymentStatus['data']["amount"],
              'item'=> $paymentStatus['data']["metadata"]["item_name"],
-             'timeOfPayyment'=>$paymentStatus['data']["paidAt"]]);
+             'timeOfPayyment'=>$paymentStatus['data']["paidAt"]
+            ]);
+             //update balance in wallet
+             $updatewalletbalance = \App\Models\walletmodel::where('AccountNumber' , '09052167750')
+             ->update('balance',$paymentStatus['data']["amount"]);
              //broadcast(new event())->toOthers();
-            return Redirect::route('welcome');
+            return Redirect::route('dashboard');
 
         }
 

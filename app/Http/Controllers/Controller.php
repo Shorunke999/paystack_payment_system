@@ -47,14 +47,13 @@ class Controller extends BaseController
         $recipientName = $recipientWallet->user->name;
         if ($recipientWallet)
         {
-            $factor = 'factor';
             return view('wallet')
             ->with('accountnumber',$request->accountnumber)
             ->with('recipientName', $recipientName)
-            ->with('factor' , $factor);
+            ->with('msg','user is in ou database');
+        ;
         }else{
-            return redirect()->back()
-            ->with('factor' , $factor);
+            return Redirect::back()->with('msg','user with the account number is not available in our company');
         }
     }
     public function sendmoney(Request $request)
@@ -63,18 +62,16 @@ class Controller extends BaseController
             $senderBalance  = $senderWallet -> balance;
             $sendingAmount = $request->amount;
         if ( $senderBalance >= $sendingAmount ) {
-            $factor = 10;
             // Update sender's balance
             $senderWallet->decrement('balance', $sendingAmount );
     
             // Update recipient's balance
             $recipientData = $request->data->recipientWallet;
             $recipientData->increment('balance', $sendingAmount);
-            return redirect()->back()->with('factor' , $factor);
+            return Redirect::route();
         }else{
-            $factor = false;
-           // return redirect()->back()->with('factor' , $factor)->
-            dd('insufficient funds');
+           return Redirect::route();
+            //dd('insufficient funds');
         }
    }
 }
