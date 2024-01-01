@@ -11,42 +11,66 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
  
-    public function show(Request $request, $id)
+    public function show()
     {
-        $user = User::find($id);
-        
+        $user =auth()->user();
         if ($user) {
             $walletInfo = $user->wallet;
-            return view('wallet', ['wallet_info' => $walletInfo]);
+            if($walletInfo){
+                return view('dashboard')
+                ->with('wallet_info',$walletInfo)
+                ->with('id',$user->id);
+            }else{
+                $createWalletInfo =$user->wallet()->create([
+                    'AccountNumber'=> '09052167750'
+                ]);
+                $walletInfo = $user->wallet;
+                return view('dasnboard')
+                ->with('dashboard',$walletInfo)
+                ->with('id',$user->id);
+
+            }
         } 
     }
-    public function show2 (Request $request,$id)
-     {
-        return view('fundsPage',['id'=>$id]);
+    public function seen()
+    {
+        $factor = false;
+        $id = auth()->user()->id;
+        return view('fundsPage',['id'=>$id , 'factor' => $factor]);
     }
-    public function search (Request $request)
+    public function search(Request $request)
      {
-        $recipientWallet = walletmodel::where('AccountNumber', $request->input)->first();
+        $recipientWallet = walletmodel::where('AccountNumber', $request->accountnumber)->first();
         $recipientName = $recipientWallet->user->name;
         if ($recipientWallet)
         {
-            return redirect()->back()
+            return view('wallet')
             ->with('recipientWallet', $recipientWallet)
             ->with('recipientName', $recipientName)
-            ->with('id',$request->user_id);
+            ->with('factor' , $factor);
+        }else{
+            $factor = true;
+            return redirect()->back()
+            ->with('factor' , $factor);
         }
     }
     public function sendmoney(Request $request)
     {
-            
-        if ($ $recipientWallet->balance >= $request->input('amount')) {
+            $senderWallet = User::find(auth()->user->id)->wallet;
+            $senderBalance  = $senderWallet -> balance;
+            $sendingAmount = $request->amount;
+        if ( $senderBalance >= $sendingAmount ) {
             // Update sender's balance
-            $senderWallet->decrement('balance', $request->input('amount'));
+            $senderWallet->decrement('balance', $sendingAmount );
     
             // Update recipient's balance
-            $recipientWallet->increment('balance', $request->input('amount'));
-    
-       return view('fundsPage',['id'=>$id]);
+            $recipientData = $request->data->recipientWallet;
+            $recipientData->increment('balance', $sendingAmount);
+            return redirect()->back()->with('factor' , $factor);
+        }else{
+            $factor = false;
+           // return redirect()->back()->with('factor' , $factor)->
+            dd('insufficient funds');
         }
    }
 }

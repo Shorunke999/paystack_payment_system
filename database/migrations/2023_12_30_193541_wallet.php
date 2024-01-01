@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users');
             $table->string('AccountNumber');
             $table->decimal('balance', 10, 2)->default(0);;
-            $table->timestamp('timeCreated');
+            $table->timestamp('updated_at')->nullable();
+            $table->timestamp('created_at')->nullable();
         });
     }
 

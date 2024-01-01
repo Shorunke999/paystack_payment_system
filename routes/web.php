@@ -1,5 +1,6 @@
 <?php
-
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,14 +14,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/{id}', [Controller::class, 'show'])->name('wallet_page');
-Route::get('sendFunds/{{id}}',  [Controller::class, 'show2'])->name('sendFunds');
-Route::post('/search_user',  [Controller::class, 'search']);
-Route::get('/sendFunds',  [Controller::class, 'sendmoney'])->name('sendmoney');
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/dashboard', [Controller::class, 'show'])->name('dashboard');
+    Route::get('/sendmoney', [Controller::class, 'seen'])->name('sendfunds');
+    Route::post('/search_form', [Controller::class, 'search'])->name('search_form');
+    Route::post('/sendmoney', [Controller::class, 'sendmoney'])->name('sendmoney');
+});
 
-
-
-Route::get('/payment-form',[\App\Http\Controllers\HomeController::class , 'index']);
-Route::post('/payment',[\App\Http\Controllers\PaymentController::class , 'redirecttogateway'])->name('payment-form');
-Route::get('/payment/callback',[\App\Http\Controllers\PaymentController::class , 'handlePaymentCallback']);/*this is the
-call back url to be set in our env file..*/
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+require __DIR__.'/auth.php';
