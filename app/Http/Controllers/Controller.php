@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
+
 
 class Controller extends BaseController
 {
@@ -36,20 +38,21 @@ class Controller extends BaseController
     {
         $factor = false;
         $id = auth()->user()->id;
-        return view('fundsPage',['id'=>$id , 'factor' => $factor]);
+        return view('fundsPage')
+        ->with('factor', $factor);
     }
     public function search(Request $request)
      {
-        $recipientWallet = walletmodel::where('AccountNumber', $request->accountnumber)->first();
+        $recipientWallet = \App\Models\walletmodel::where('AccountNumber', $request->accountnumber)->first();
         $recipientName = $recipientWallet->user->name;
         if ($recipientWallet)
         {
+            $factor = 'factor';
             return view('wallet')
-            ->with('recipientWallet', $recipientWallet)
+            ->with('accountnumber',$request->accountnumber)
             ->with('recipientName', $recipientName)
             ->with('factor' , $factor);
         }else{
-            $factor = true;
             return redirect()->back()
             ->with('factor' , $factor);
         }
@@ -60,6 +63,7 @@ class Controller extends BaseController
             $senderBalance  = $senderWallet -> balance;
             $sendingAmount = $request->amount;
         if ( $senderBalance >= $sendingAmount ) {
+            $factor = 10;
             // Update sender's balance
             $senderWallet->decrement('balance', $sendingAmount );
     

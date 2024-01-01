@@ -7,11 +7,11 @@
     <title>Document</title>
 </head>
 <body>
-    @if ($factor = true)
+    {{--@if ({{$factor = true}})
         <div>
             invalid account AccountNumber.
         </div>
-    @endif
+    @endif--}}
     <form id="search-form" method="post" action="{{route('search_form')}}">
         @csrf
     
