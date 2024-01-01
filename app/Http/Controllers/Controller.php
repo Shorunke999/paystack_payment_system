@@ -59,7 +59,7 @@ class Controller extends BaseController
     }
     public function sendmoney(Request $request)
     {
-            $senderWallet = User::find(auth()->user->id)->wallet;
+            $senderWallet = \App\Models\User::find(auth()->user()->id)->wallet;
             $senderBalance  = $senderWallet -> balance;
             $sendingAmount = $request->amount;
         if ( $senderBalance >= $sendingAmount ) {
